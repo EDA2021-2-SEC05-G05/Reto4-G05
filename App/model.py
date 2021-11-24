@@ -27,9 +27,12 @@
 
 import config as cf
 from DISClib.ADT import list as lt
+from DISClib.ADT import graph as gr
+from DISClib.Algorithms.Graphs import bfs as bfs
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import mergesort as mr
+from DISClib.ADT import orderedmap as om
 assert cf
 
 """
@@ -39,7 +42,65 @@ los mismos.
 
 # Construccion de modelos
 
+def newAnalyzer():
+    analyzer = {'routes': None,
+                "cities":None,
+                "airports": None
+
+                }
+    analyzer["IATAs"] = mp.newMap(10000, 
+                                    maptype="CHAINING", 
+                                    loadfactor=4.0)
+    analyzer["airports"] = mp.newMap(10000, 
+                                    maptype="CHAINING", 
+                                    loadfactor=4.0) 
+    analyzer["cities"] = mp.newMap(41010, 
+                                    maptype="CHAINING", 
+                                    loadfactor=4.0)  
+    analyzer["routes"] = gr.newGraph(datastructure="ADJ_LIST", 
+                                    directed=True, 
+                                    size=92607)                               
+    analyzer["airportsIV"] = gr.newGraph(datastructure="ADJ_LIST", 
+                                        size=92607)
+                                    
+    return analyzer                              
+
 # Funciones para agregar informacion al catalogo
+
+def addAP(analyzer, airport):
+    mp.put(analyzer["IATAs"], airport["IATA"], airport)
+    #mp.put(analyzer["airports"], airport["Name"], airport)
+
+def addRoute(analyzer, route):
+    a = mp.get(analyzer["IATAs"], route["Departure"])
+    aa = me.getKey(a)
+    if not gr.containsVertex(analyzer["IATAs"], aa):
+        gr.insertVertex(analyzer["routes"], aa)
+    b = mp.get(analyzer["IATAs"], route["Destination"])
+    b = me.getKey(b)
+    if not gr.containsVertex(analyzer["IATAs"], b):
+        gr.insertVertex(analyzer["routes"], b)
+    gr.addEdge(analyzer["routes"], aa, b, float(route["distance_km"]))
+
+def addCity(analyzer, city):
+    mp.put(analyzer["cities"], city["city"], city)
+
+
+def addIV(analyzer):
+    vers = analyzer["routes"]
+    vers = gr.vertices(vers)
+    for ver in lt.iterator(vers):
+        if not gr.containsVertex(analyzer["airportsIV"], ver):
+            gr.insertVertex(analyzer["airportsIV"], ver)
+        g = gr.adjacentEdges(analyzer["routes"], ver)
+        for y in lt.iterator(g):
+            vy = y["vertexB"]
+            if not gr.containsVertex(analyzer["airportsIV"], vy):
+                gr.insertVertex(analyzer["airportsIV"], vy)
+            if gr.getEdge(analyzer["airportsIV"], ver, vy) == None and gr.getEdge(analyzer["airportsIV"], vy, ver) == None:
+                gr.addEdge(analyzer["airportsIV"], ver, vy, y["weight"])
+    return analyzer
+
 
 # Funciones para creacion de datos
 

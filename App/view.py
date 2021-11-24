@@ -25,6 +25,8 @@ import sys
 import controller
 from DISClib.ADT import list as lt
 assert cf
+from DISClib.ADT import graph as gr
+from DISClib.ADT import map as mp
 
 
 """
@@ -52,8 +54,16 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
+        analyzer = controller.init()
+        r = controller.loadData(analyzer)
         print("Cargando información de los archivos ....")
-
+        print("Total de aeropuertos en el dígrafo: ", gr.numVertices(analyzer["airportsIV"]))
+        print("Total de aeropuertos en el grafo no dirigido: ", gr.numVertices(analyzer["routes"]))
+        print("Total de rutas aéreos en el dígrafo: ", gr.numEdges(analyzer["airportsIV"]))
+        print("Total de rutas aéreos en el grafo no dirigido: ", gr.numEdges(analyzer["routes"]))
+        print("Total de ciudades: ", r[3])
+        print("Primer aeropuerto cargado: ", r[1])
+        print("Última ciudad cargada: ", r[2])
     elif int(inputs[0]) == 2:
         pass
     elif int(inputs[0]) == 3:

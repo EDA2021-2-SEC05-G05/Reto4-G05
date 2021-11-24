@@ -31,7 +31,42 @@ El controlador se encarga de mediar entre la vista y el modelo.
 
 # Inicialización del Catálogo de libros
 
+def init():
+    analyzer = model.newAnalyzer()
+    return analyzer
+
 # Funciones para la carga de datos
+
+def loadData(analyzer):
+    ufosfile = cf.data_dir + "Skylines/airports_full.csv"
+    input_file = csv.DictReader(open(ufosfile, encoding="utf-8"),
+                                delimiter=",")
+    a = next(input_file)
+    firstAP = ("Nombre: "+ str(a["Name"]) + " | Ciudad: "+ str(a["City"]) + " | País: "+ 
+    str(a["Country"]) + " | Latitud: "+ str(a["Latitude"]) + " | Longitud: "+ str(a["Longitude"]))
+    ufosfile = cf.data_dir + "Skylines/airports_full.csv"
+    input_file = csv.DictReader(open(ufosfile, encoding="utf-8"),
+                                delimiter=",")          
+    for airport in input_file:
+        model.addAP(analyzer, airport)
+    #model.ReqExtra(analyzer)
+    ufosfile = cf.data_dir + "Skylines/routes_full.csv"
+    input_file = csv.DictReader(open(ufosfile, encoding="utf-8"),
+                                delimiter=",")
+    for route in input_file:
+        model.addRoute(analyzer, route)
+    ufosfile = cf.data_dir + "Skylines/worldcities.csv"
+    input_file = csv.DictReader(open(ufosfile, encoding="utf-8"),
+                                delimiter=",")
+    n = 0
+    for city in input_file:
+        model.addCity(analyzer, city)
+        k = city
+        n+=1
+    lastcity = ("Ciudad: "+ str(k["city"])+ " | Población: "+ str(k["population"]) +" | Latitud: "+
+    str(k["lat"]) + " | Longitud: "+ str(k["lng"]))
+    model.addIV(analyzer)
+    return analyzer, firstAP, lastcity, n
 
 # Funciones de ordenamiento
 
