@@ -69,7 +69,13 @@ while True:
     elif int(inputs[0]) == 3:
         pass
     elif int(inputs[0]) == 4:
-        pass
+        """
+        Aviso: Se está usando la columna city, no city_ascii, por eso no usar caracteres especiales
+        """
+        city0 = input("Ingrese la primera ciudad sin caracteres especiales: \n")
+        controller.getCity(analyzer, city0)
+        cityF = input("Ingrese la segunda ciudad sin caracteres especiales: \n")
+        controller.getCity(analyzer, cityF)
     elif int(inputs[0]) == 5:
         pass
     elif int(inputs[0]) == 6:

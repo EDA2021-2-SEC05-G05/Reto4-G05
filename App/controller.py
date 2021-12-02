@@ -71,3 +71,6 @@ def loadData(analyzer):
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
+
+def getCity(analyzer, city):
+    model.getCity(analyzer, city)

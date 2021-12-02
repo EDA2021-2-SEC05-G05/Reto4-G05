@@ -83,7 +83,15 @@ def addRoute(analyzer, route):
     gr.addEdge(analyzer["routes"], aa, b, float(route["distance_km"]))
 
 def addCity(analyzer, city):
-    mp.put(analyzer["cities"], city["city"], city)
+    ciudades = analyzer["cities"]
+    if mp.contains(ciudades, city["city"]):
+        k = mp.get(ciudades, city["city"])
+        v = me.getValue(k)
+        lt.addLast(v, city)
+    else:
+        l = lt.newList()
+        lt.addLast(l, city)
+        mp.put(ciudades, city["city"], l)
 
 
 def addIV(analyzer):
@@ -105,6 +113,23 @@ def addIV(analyzer):
 # Funciones para creacion de datos
 
 # Funciones de consulta
+
+def getCity(analyzer, city):
+    a = mp.get(analyzer["cities"], city)
+    a = me.getValue(a)
+    if lt.size(a) > 1:
+        print("Se han encontrado varias ciudades bajo el mismo nombre\n")
+        i = 1
+        ciduadesr = lt.newList()
+        for city in lt.iterator(a):
+            lt.addLast(ciduadesr, city)
+            print("Presione ", i, " para selecionar a ", city["city"], ", ", city["admin_name"], "-"
+            , city["country"], " | Lat: ", city["lat"], " Long: ", city["lng"])
+            i+=1
+        num = input("Ingrese el número de la ciudad que desea: ")
+        print("Usted ha elegido: ", lt.getElement(ciduadesr, int(num)))
+    else:
+        print("Usted ha elegido: ", lt.getElement(a, 1))
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
