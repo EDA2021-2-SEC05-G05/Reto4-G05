@@ -62,6 +62,9 @@ def newAnalyzer():
                                     size=92607)                               
     analyzer["airportsIV"] = gr.newGraph(datastructure="ADJ_LIST", 
                                         size=92607)
+    analyzer["markedroutes"] = mp.newMap(100000, 
+                                    maptype="CHAINING", 
+                                    loadfactor=4.0) 
                                     
     return analyzer                              
 
@@ -74,13 +77,26 @@ def addAP(analyzer, airport):
 def addRoute(analyzer, route):
     a = mp.get(analyzer["IATAs"], route["Departure"])
     aa = me.getKey(a)
-    if not gr.containsVertex(analyzer["IATAs"], aa):
+    if not gr.containsVertex(analyzer["routes"], aa):
         gr.insertVertex(analyzer["routes"], aa)
+        gr.insertVertex(analyzer["airportsIV"], aa)
     b = mp.get(analyzer["IATAs"], route["Destination"])
     b = me.getKey(b)
-    if not gr.containsVertex(analyzer["IATAs"], b):
+    if not gr.containsVertex(analyzer["routes"], b):
         gr.insertVertex(analyzer["routes"], b)
-    gr.addEdge(analyzer["routes"], aa, b, float(route["distance_km"]))
+        gr.insertVertex(analyzer["airportsIV"], b)
+    if gr.getEdge(analyzer["routes"], aa, b) == None:
+        gr.addEdge(analyzer["routes"], aa, b, float(route["distance_km"]))
+    return aa, b
+
+def addG(analyzer, route, dep, des, k):
+    m = analyzer["markedroutes"]
+    mp.put(m, (route["Departure"], "-", route["Destination"]), route)
+    if mp.contains(m, (route["Destination"], "-", route["Departure"])):
+        k+=1
+        if gr.getEdge(analyzer["airportsIV"], dep, des) == None:
+            gr.addEdge(analyzer["airportsIV"], dep, des, float(route["distance_km"]))
+    return k
 
 def addCity(analyzer, city):
     ciudades = analyzer["cities"]
@@ -105,7 +121,7 @@ def addIV(analyzer):
             vy = y["vertexB"]
             if not gr.containsVertex(analyzer["airportsIV"], vy):
                 gr.insertVertex(analyzer["airportsIV"], vy)
-            if gr.getEdge(analyzer["airportsIV"], ver, vy) == None and gr.getEdge(analyzer["airportsIV"], vy, ver) == None:
+            if gr.getEdge(analyzer["routes"], ver, vy) != None and gr.getEdge(analyzer["routes"], vy, ver) != None:
                 gr.addEdge(analyzer["airportsIV"], ver, vy, y["weight"])
     return analyzer
 

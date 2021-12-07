@@ -22,6 +22,8 @@
 
 import config as cf
 import model
+from DISClib.ADT import graph as gr
+from DISClib.ADT import list as lt
 import csv
 
 
@@ -38,36 +40,57 @@ def init():
 # Funciones para la carga de datos
 
 def loadData(analyzer):
-    ufosfile = cf.data_dir + "Skylines/airports_full.csv"
+    ufosfile = cf.data_dir + "Skylines/airports-utf8-small.csv"
     input_file = csv.DictReader(open(ufosfile, encoding="utf-8"),
                                 delimiter=",")
-    a = next(input_file)
-    firstAP = ("Nombre: "+ str(a["Name"]) + " | Ciudad: "+ str(a["City"]) + " | País: "+ 
-    str(a["Country"]) + " | Latitud: "+ str(a["Latitude"]) + " | Longitud: "+ str(a["Longitude"]))
-    ufosfile = cf.data_dir + "Skylines/airports_full.csv"
-    input_file = csv.DictReader(open(ufosfile, encoding="utf-8"),
-                                delimiter=",")          
+    x = 100
+    y = 100
+    lastAP = ""
+    firstAP = ""
+    apC = 0
     for airport in input_file:
         model.addAP(analyzer, airport)
-    #model.ReqExtra(analyzer)
-    ufosfile = cf.data_dir + "Skylines/routes_full.csv"
+        apC+=1
+        if int(airport["id"]) < x:
+            x = int(airport["id"])
+            firstAP = airport
+        if int(airport["id"]) > y:
+            y = int(airport["id"])
+            lastAP = airport
+    lastAP = APFix(lastAP)
+    firstAP = APFix(firstAP)
+
+    ufosfile = cf.data_dir + "Skylines/routes-utf8-small.csv"
     input_file = csv.DictReader(open(ufosfile, encoding="utf-8"),
                                 delimiter=",")
+    RoutesC = 0
+    h = 0
     for route in input_file:
-        model.addRoute(analyzer, route)
-    ufosfile = cf.data_dir + "Skylines/worldcities.csv"
+        r = model.addRoute(analyzer, route)
+        h = model.addG(analyzer, route, r[0], r[1], h)
+        RoutesC+=1
+    
+    ufosfile = cf.data_dir + "Skylines/worldcities-utf8.csv"
     input_file = csv.DictReader(open(ufosfile, encoding="utf-8"),
                                 delimiter=",")
-    n = 0
+    firstcity = next(input_file)
+    model.addCity(analyzer, firstcity)
+    firstcity = CityFix(firstcity)           
+    n = 1
     for city in input_file:
         model.addCity(analyzer, city)
         k = city
         n+=1
-    lastcity = ("Ciudad: "+ str(k["city"])+ " | Población: "+ str(k["population"]) +" | Latitud: "+
-    str(k["lat"]) + " | Longitud: "+ str(k["lng"]))
-    model.addIV(analyzer)
-    return analyzer, firstAP, lastcity, n
+    lastcity = CityFix(k)
+    #model.addIV(analyzer)
+    return analyzer, firstAP, lastcity, n, apC, lastAP, RoutesC, firstcity, h
 
+def APFix(ap):
+    return ("Nombre: "+ str(ap["Name"]) + " | Ciudad: "+ str(ap["City"]) + " | País: "+ 
+            str(ap["Country"]) + " | Latitud: "+ str(ap["Latitude"]) + " | Longitud: "+ str(ap["Longitude"]))
+def CityFix(city):
+    return ("Ciudad: "+ str(city["city"])+ " | Población: "+ str(city["population"]) +" | Latitud: "+
+    str(city["lat"]) + " | Longitud: "+ str(city["lng"]))
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
