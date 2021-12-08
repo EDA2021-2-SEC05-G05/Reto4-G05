@@ -40,7 +40,7 @@ def init():
 # Funciones para la carga de datos
 
 def loadData(analyzer):
-    ufosfile = cf.data_dir + "Skylines/airports-utf8-small.csv"
+    ufosfile = cf.data_dir + "Skylines/airports-utf8-large.csv"
     input_file = csv.DictReader(open(ufosfile, encoding="utf-8"),
                                 delimiter=",")
     x = 100
@@ -60,7 +60,7 @@ def loadData(analyzer):
     lastAP = APFix(lastAP)
     firstAP = APFix(firstAP)
 
-    ufosfile = cf.data_dir + "Skylines/routes-utf8-small.csv"
+    ufosfile = cf.data_dir + "Skylines/routes-utf8-large.csv"
     input_file = csv.DictReader(open(ufosfile, encoding="utf-8"),
                                 delimiter=",")
     RoutesC = 0
@@ -83,6 +83,7 @@ def loadData(analyzer):
         n+=1
     lastcity = CityFix(k)
     #model.addIV(analyzer)
+    model.Components(analyzer)
     return analyzer, firstAP, lastcity, n, apC, lastAP, RoutesC, firstcity, h
 
 def APFix(ap):
@@ -95,5 +96,15 @@ def CityFix(city):
 
 # Funciones de consulta sobre el catálogo
 
+def getInter(analyzer):
+    return model.Inter(analyzer)
+
 def getCity(analyzer, city):
     model.getCity(analyzer, city)
+
+def getAfected(analyzer, ap):
+    return model.Afected(analyzer, ap)
+
+def clusters(analyzer, ap1, ap2):
+    return model.clusters(analyzer, ap1, ap2)
+

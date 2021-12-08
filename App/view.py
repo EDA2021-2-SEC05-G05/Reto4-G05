@@ -27,7 +27,36 @@ from DISClib.ADT import list as lt
 assert cf
 from DISClib.ADT import graph as gr
 from DISClib.ADT import map as mp
+from DISClib.DataStructures import mapentry as me
+import time
 
+sys.setrecursionlimit(10000)
+
+def printR1Results(list):
+    i = 1
+    while i <=5:
+        m = lt.getElement(list, i)
+        print("Nombre: ", m["Name"], " | Ciudad :", m["City"], " | País: ", m["Country"], " | IATA: ",
+        m["IATA"], " | connections: ", m["connections"], " | inbound: ", m["inbound"], " | outbound :", 
+        m["outbound"])
+        i+=1
+
+def printR5Results(list):
+    i = 1
+    while i <=3:
+        m = lt.getElement(list, i)
+        m = mp.get(analyzer["IATAs"], m)
+        m = me.getValue(m)
+        print("IATA: ", m["IATA"], " | Name: ", m["Name"], " | Ciudad: ", m["City"], " | País: ", m["Country"])
+        i+=1
+    print("- \n"*3)
+    n = 2
+    while n>=0:
+        m = lt.getElement(list, lt.size(list)-n)
+        m = mp.get(analyzer["IATAs"], m)
+        m = me.getValue(m)
+        print("IATA: ", m["IATA"], " | Name: ", m["Name"], " | Ciudad: ", m["City"], " | País: ", m["Country"])
+        n-=1
 
 """
 La vista se encarga de la interacción con el usuario
@@ -69,21 +98,51 @@ while True:
         print("Primera ciudad cargada: ", r[7])
         print("Última ciudad cargada: ", r[2])
     elif int(inputs[0]) == 2:
-        pass
+        start_time = time.process_time()
+        con = controller.getInter(analyzer)
+        print("Número de aeropuertos interconectados: ", con[1])
+        printR1Results(con[0])
+        stop_time = time.process_time()
+        elapsed_time_mseg = (stop_time - start_time)*1000
+        print(elapsed_time_mseg)
     elif int(inputs[0]) == 3:
-        pass
+        start_time = time.process_time()
+        ap1 = input("Ingrese el IATA del aeropuerto 1: ")
+        ap2 = input("Ingrese el IATA del aeropuerto 2: ")
+        r = controller.clusters(analyzer, ap1, ap2)
+        print(r[0])
+        print("Número de elementos conectados: ", r[1])
+        stop_time = time.process_time()
+        elapsed_time_mseg = (stop_time - start_time)*1000
+        print(elapsed_time_mseg)
     elif int(inputs[0]) == 4:
         """
         Aviso: Se está usando la columna city, no city_ascii, por si es relevante para las pruebas
         """
+        start_time = time.process_time()
         city0 = input("Ingrese la primera ciudad: \n")
         controller.getCity(analyzer, city0)
         cityF = input("Ingrese la segunda ciudad: \n")
         controller.getCity(analyzer, cityF)
+
+        stop_time = time.process_time()
+        elapsed_time_mseg = (stop_time - start_time)*1000
+        print(elapsed_time_mseg)
     elif int(inputs[0]) == 5:
-        pass
+        start_time = time.process_time()
+
+        stop_time = time.process_time()
+        elapsed_time_mseg = (stop_time - start_time)*1000
+        print(elapsed_time_mseg)
     elif int(inputs[0]) == 6:
-        pass
+        start_time = time.process_time()
+        ap = input("Ingrese al IATA del aeropuerto a dejar de funcionar: ")
+        r = controller.getAfected(analyzer, ap)
+        print("Numero de aeropuertos afectados: ", lt.size(r))
+        printR5Results(r)
+        stop_time = time.process_time()
+        elapsed_time_mseg = (stop_time - start_time)*1000
+        print(elapsed_time_mseg)
     else:
         sys.exit(0)
 sys.exit(0)
