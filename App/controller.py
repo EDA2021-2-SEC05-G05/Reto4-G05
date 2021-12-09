@@ -108,3 +108,5 @@ def getAfected(analyzer, ap):
 def clusters(analyzer, ap1, ap2):
     return model.clusters(analyzer, ap1, ap2)
 
+def shortcut(analyzer, city0, cityF):
+    return model.shortcut(analyzer, city0, cityF)
