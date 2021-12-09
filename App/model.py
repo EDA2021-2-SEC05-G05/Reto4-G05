@@ -303,10 +303,10 @@ def route(analyzer,tupla):
         value= mp.get(MapAirports,i)["value"]
         route= distance(tupla[0], tupla[1], float(value["Latitude"]), float(value["Longitude"]) )
         
-        if route<ini and gr.containsVertex(analyzer["airportsIV"], value["IATA"]):
+        if route<ini and gr.containsVertex(analyzer["airportsIV"], value["IATAs"]):
             ini=route
             name = value["Name"]
-            IATA=value["IATA"]
+            IATA=value["IATAs"]
         
     finalList=lt.newList("ARRAY_LIST")
     lt.addLast(finalList,name)
