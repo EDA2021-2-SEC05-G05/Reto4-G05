@@ -26,6 +26,7 @@
 
 
 import config as cf
+import math as df
 from DISClib.ADT import list as lt
 from DISClib.ADT import graph as gr
 from DISClib.Algorithms.Graphs import bfs as bfs
@@ -35,6 +36,9 @@ from DISClib.Algorithms.Sorting import mergesort as ms
 from DISClib.Algorithms.Sorting import quicksort as qs
 from DISClib.ADT import orderedmap as om
 from DISClib.Algorithms.Graphs import scc as scc
+from DISClib.Algorithms.Graphs import dijsktra as alg
+
+
 assert cf
 
 """
@@ -214,6 +218,64 @@ def clusters(analyzer, ap1, ap2):
         else:
             bt = str(me.getValue(mp.get(aps, ap1))["Name"])+ " NO se encuentra en el mismo clúster que "+str(me.getValue(mp.get(aps, ap2))["Name"])
     return bt, scc.connectedComponents(ks)
+
+def distance(lati0,long0,lati1,long1):
+
+    Oppsite  = 20000
+    long0, lati0, long1, lati1 = df(df.radians, [long0, lati0, long1, lati1])
+    distancelong = long1 - long0
+    distancelati = lati1 - lati0
+    a = df.sin(distancelati/2)*2 + df.cos(lati0) * df.cos(lati1) * df.sin(distancelong/2)*2
+    b = 2 * df.atan2(df.sqrt(a), df.sqrt(1-a))
+    c = 6371 * b
+
+    d =df.atan2(df.cos(lati0)*df.sin(lati1)-df.sin(lati0)*df.cos(lati1)*df.cos(long1-long0), df.sin(long1-long0)*df.cos(lati1)) 
+    d = df.degrees(d)
+    c2 = c * 1000
+    distance = c2 + Oppsite * 2 / 2
+
+    roundedDistance = distance/1000
+    return roundedDistance
+
+def route(analyzer,tupla):
+
+    MapAirports = analyzer["MapAirports"]
+    ini=111111111111111111111110
+
+    for i in lt.iterator(mp.keySet(MapAirports)): 
+        value= mp.get(MapAirports,i)["value"]
+        route= distance(tupla[0], tupla[1], float(value["Latitude"]), float(value["Longitude"]) )
+        
+        if route<ini and gr.containsVertex(analyzer["RouteGraphD"], value["IATA"]):
+            ini=route
+            name = value["Name"]
+            IATA=value["IATA"]
+        
+    finalList=lt.newList("ARRAY_LIST")
+    lt.addLast(finalList,name)
+    lt.addLast(finalList,IATA)
+    return finalList
+
+def shortcut(analyzer, city0,cityF):
+    travelmap=analyzer["City"]
+
+    city0=mp.get(travelmap,city0)["value"]
+    cityF=mp.get(travelmap,cityF)['value']
+
+    initialCity = (float(city0["lat"]) , float(city0["lng"]))
+    finalCity=(float(cityF["lat"]) , float(cityF["lng"]))
+    
+    first= route(analyzer,initialCity)
+    f0=lt.getElement(first,2)
+    
+    second=route(analyzer,finalCity)
+    f1=lt.getElement(second,2)
+
+    dijsktra = alg.Dijkstra(analyzer["RouteGraphNoD"], f0)
+    
+    return  alg.pathTo(dijsktra, f1)
+
+
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento

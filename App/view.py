@@ -121,9 +121,9 @@ while True:
         """
         start_time = time.process_time()
         city0 = input("Ingrese la primera ciudad: \n")
-        controller.getCity(analyzer, city0)
+        controller.shortcut(analyzer, city0)
         cityF = input("Ingrese la segunda ciudad: \n")
-        controller.getCity(analyzer, cityF)
+        controller.shortcut(analyzer, cityF)
 
         stop_time = time.process_time()
         elapsed_time_mseg = (stop_time - start_time)*1000
