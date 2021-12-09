@@ -40,7 +40,7 @@ def init():
 # Funciones para la carga de datos
 
 def loadData(analyzer):
-    ufosfile = cf.data_dir + "Skylines/airports-utf8-large.csv"
+    ufosfile = cf.data_dir + "Skylines/airports-utf8-small.csv"
     input_file = csv.DictReader(open(ufosfile, encoding="utf-8"),
                                 delimiter=",")
     x = 100
@@ -60,7 +60,7 @@ def loadData(analyzer):
     lastAP = APFix(lastAP)
     firstAP = APFix(firstAP)
 
-    ufosfile = cf.data_dir + "Skylines/routes-utf8-large.csv"
+    ufosfile = cf.data_dir + "Skylines/routes-utf8-small.csv"
     input_file = csv.DictReader(open(ufosfile, encoding="utf-8"),
                                 delimiter=",")
     RoutesC = 0
@@ -99,6 +99,8 @@ def CityFix(city):
 def getInter(analyzer):
     return model.Inter(analyzer)
 
+def LongestTrip(analyzer, city, miles):
+    return model.LTrip(analyzer, city, miles)
 def getCity(analyzer, city):
     model.getCity(analyzer, city)
 

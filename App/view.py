@@ -116,9 +116,6 @@ while True:
         elapsed_time_mseg = (stop_time - start_time)*1000
         print(elapsed_time_mseg)
     elif int(inputs[0]) == 4:
-        """
-        Aviso: Se está usando la columna city, no city_ascii, por si es relevante para las pruebas
-        """
         start_time = time.process_time()
         city0 = input("Ingrese la primera ciudad: \n")
         cityF = input("Ingrese la segunda ciudad: \n")
@@ -130,7 +127,12 @@ while True:
 
     elif int(inputs[0]) == 5:
         start_time = time.process_time()
-
+        miles = input("Ingrese la cantidad de millas que posee: ")
+        miles = float(miles)*1.60
+        city = input("Ingrese a ciudad desde la que desea salir: ")
+        city = controller.getCity(analyzer, city)
+        r = controller.LongestTrip(analyzer, city, miles)
+        print("La diferencia entre millas y los km del viaje es de: ", r[0])
         stop_time = time.process_time()
         elapsed_time_mseg = (stop_time - start_time)*1000
         print(elapsed_time_mseg)

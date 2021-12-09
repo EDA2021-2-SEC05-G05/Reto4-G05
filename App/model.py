@@ -33,6 +33,7 @@ from DISClib.ADT import list as lt
 from DISClib.ADT import graph as gr
 from DISClib.Algorithms.Graphs import bfs as bfs
 from DISClib.ADT import map as mp
+from DISClib.Algorithms.Graphs import prim as prm
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import mergesort as ms
 from DISClib.Algorithms.Sorting import quicksort as qs
@@ -242,13 +243,22 @@ def getCity(analyzer, city):
         print("Usted ha elegido: ", lt.getElement(a, 1))
 
 
+def LTRip(analyzer, city, miles):
+    rutas = analyzer["routes"]
+    prim = prm.PrimMST(rutas)
+    mst = prm.prim(rutas, prim, city["airport"])
+    wei = prm.weightMST(rutas, mst)
+    wei = wei - miles
+    gg = prm.edgesMST(rutas, mst)
+
+    return wei
 def Afected(analyzer, ap):
     g = gr.adjacents(analyzer["routes"], ap)
     gg = lt.newList()
     for r in lt.iterator(g):
         if lt.isPresent(gg, r) == 0:
             lt.addLast(gg, r)
-    return qs.sort(gg, ggcmp)
+    return ms.sort(gg, ggcmp)
 
 def ggcmp (r1, r2):
     return r1<r2
