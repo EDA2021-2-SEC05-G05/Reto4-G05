@@ -25,7 +25,9 @@
  """
 
 
+from ctypes import LittleEndianStructure
 import config as cf
+from math import radians, cos, sin, asin, sqrt
 import math as df
 from DISClib.ADT import list as lt
 from DISClib.ADT import graph as gr
@@ -62,7 +64,10 @@ def newAnalyzer():
                                     loadfactor=4.0) 
     analyzer["cities"] = mp.newMap(41010, 
                                     maptype="CHAINING", 
-                                    loadfactor=4.0)  
+                                    loadfactor=4.0)
+    analyzer["byCity"] = mp.newMap(10000, 
+                                    maptype="CHAINING", 
+                                    loadfactor=4.0)    
     analyzer["routes"] = gr.newGraph(datastructure="ADJ_LIST", 
                                     directed=True, 
                                     size=92607)                               
@@ -78,7 +83,14 @@ def newAnalyzer():
 
 def addAP(analyzer, airport):
     mp.put(analyzer["IATAs"], airport["IATA"], airport)
-    #mp.put(analyzer["airports"], airport["Name"], airport)
+    if mp.contains(analyzer["byCity"], airport["City"]):
+        v = mp.get(analyzer["byCity"], airport["City"])
+        v = me.getValue(v)
+        lt.addLast(v, airport)
+    else:
+        lst = lt.newList()
+        lt.addLast(lst, airport)
+        mp.put(analyzer["byCity"], airport["City"], lst)
 
 def addRoute(analyzer, route):
     a = mp.get(analyzer["IATAs"], route["Departure"])
@@ -105,16 +117,51 @@ def addG(analyzer, route, dep, des, k):
     return k
 
 def addCity(analyzer, city):
+    city = addAPtoCity(analyzer, city)
     ciudades = analyzer["cities"]
-    if mp.contains(ciudades, city["city"]):
-        k = mp.get(ciudades, city["city"])
+    if mp.contains(ciudades, city["city_ascii"]):
+        k = mp.get(ciudades, city["city_ascii"])
         v = me.getValue(k)
         lt.addLast(v, city)
     else:
         l = lt.newList()
         lt.addLast(l, city)
-        mp.put(ciudades, city["city"], l)
+        mp.put(ciudades, city["city_ascii"], l)
+    
 
+def addAPtoCity(analyzer, city):
+    v = mp.get(analyzer["byCity"], city["city_ascii"])
+    if v != None:
+        v = me.getValue(v)
+        ap = lt.getElement(v, 1)
+        if lt.size(v) == 1:
+            city["airport"] = ap["IATA"]
+            city["distairport"] = haversine(float(ap["Longitude"]), 
+            float(ap["Latitude"]), float(city["lng"]), float(city["lat"]))
+        else:
+            dist = haversine(float(ap["Longitude"]), 
+            float(ap["Latitude"]), float(city["lng"]), float(city["lat"]))
+            i = 2
+            while i<=lt.size(v):
+                airp = lt.getElement(v, i)
+                hav = haversine(float(airp["Longitude"]), 
+                float(airp["Latitude"]), float(city["lng"]), float(city["lat"]))
+                if hav > dist:
+                    dist = hav
+                i+=1
+    else:
+        city["distairport"] = 0
+    return city
+
+
+def haversine(lon1, lat1, lon2, lat2):
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+    dlon = lon2 - lon1 
+    dlat = lat2 - lat1 
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    c = 2 * asin(sqrt(a)) 
+    r = 6371 
+    return abs(c * r)
 
 def addIV(analyzer):
     vers = analyzer["routes"]
