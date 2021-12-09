@@ -123,10 +123,11 @@ while True:
         city0 = input("Ingrese la primera ciudad: \n")
         cityF = input("Ingrese la segunda ciudad: \n")
         controller.shortcut(analyzer, city0, cityF)
-
+        
         stop_time = time.process_time()
         elapsed_time_mseg = (stop_time - start_time)*1000
         print(elapsed_time_mseg)
+
     elif int(inputs[0]) == 5:
         start_time = time.process_time()
 

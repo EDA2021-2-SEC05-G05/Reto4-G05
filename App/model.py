@@ -239,14 +239,14 @@ def distance(lati0,long0,lati1,long1):
 
 def route(analyzer,tupla):
 
-    MapAirports = analyzer["MapAirports"]
+    MapAirports = analyzer["airportsIV"]
     ini=111111111111111111111110
 
     for i in lt.iterator(mp.keySet(MapAirports)): 
         value= mp.get(MapAirports,i)["value"]
         route= distance(tupla[0], tupla[1], float(value["Latitude"]), float(value["Longitude"]) )
         
-        if route<ini and gr.containsVertex(analyzer["RouteGraphD"], value["IATA"]):
+        if route<ini and gr.containsVertex(analyzer["airportsIV"], value["IATA"]):
             ini=route
             name = value["Name"]
             IATA=value["IATA"]
@@ -257,13 +257,14 @@ def route(analyzer,tupla):
     return finalList
 
 def shortcut(analyzer, city0,cityF):
-    travelmap=analyzer["City"]
+
+    travelmap = analyzer["cities"]
 
     city0=mp.get(travelmap,city0)["value"]
     cityF=mp.get(travelmap,cityF)['value']
 
-    initialCity = (float(city0["lat"]) , float(city0["lng"]))
-    finalCity=(float(cityF["lat"]) , float(cityF["lng"]))
+    initialCity = (float(city0["Latitude"]) , float(city0["Longitude"]))
+    finalCity=(float(cityF["Latitude"]) , float(cityF["Longitude"]))
     
     first= route(analyzer,initialCity)
     f0=lt.getElement(first,2)
@@ -271,7 +272,7 @@ def shortcut(analyzer, city0,cityF):
     second=route(analyzer,finalCity)
     f1=lt.getElement(second,2)
 
-    dijsktra = alg.Dijkstra(analyzer["RouteGraphNoD"], f0)
+    dijsktra = alg.Dijkstra(analyzer["airportsIV"], f0)
     
     return  alg.pathTo(dijsktra, f1)
 
